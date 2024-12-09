@@ -1,5 +1,5 @@
 import React from "react";
-import profile from '../vector-images/profileicon.svg';
+import avatar from '../photos/avatar.jpg';
 
 const Profile = () => {
     return (
@@ -11,7 +11,7 @@ const Profile = () => {
                     <button className='bg-[#0077EB] w-[160px] h-[40px] rounded-xl font-gilroy_semibold text-white text-xl p-2'>Редактировать</button>
                 </div>
                 <div className="flex flex-row items-start gap-6">
-                    <img src={profile} alt='Кнопка профиля' className="w-[185px] h-[185px] rounded-full"/>
+                    <img src={avatar} width='185' height='185' alt='Кнопка профиля' className="rounded-[50%]"/>
                     <div className="flex flex-col">
                         <h2 className="font-gilroy_semibold text-white text-[32px] leading-[38px] mb-6">Виноградов Арсений Александрович</h2>
                         <div className="flex flex-row gap-6 mb-6">
@@ -66,7 +66,7 @@ const Profile = () => {
                         </label>
                         <button className='bg-[#0077EB] w-[103px] h-[34px] rounded-xl font-gilroy_semibold text-white text-[15px] leading-[18px] p-2'>Сортировка</button>
                     </div>
-                    <div className="w-auto h-[392px] bg-white rounded-2xl"/>
+                    {/* <div className="w-auto h-[392px] bg-white rounded-2xl"/> */}
                 </div>
             </div>
         </div>
