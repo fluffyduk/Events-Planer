@@ -4,7 +4,7 @@ import avatar from '../photos/avatar.jpg';
 const Profile = () => {
     return (
         <div className="bg-[#71798C] w-screen h-auto p-6">
-            <div class='profile-placeholder' className="w-auto h-[283px] bg-[#292C33] rounded-3xl p-6">
+            <div class='profile-placeholder' className="w-[1283px] h-[283px] bg-[#292C33] rounded-3xl p-6">
                 <div className="flex items-center mb-3">
                     <div className="h-[29px] w-[8px] bg-[#008CFF] rounded mr-2"/>
                     <h1 className="font-gilroy_semibold text-white text-[32px] mr-auto leading-[38px]">Профиль</h1>
