@@ -3,8 +3,8 @@ import './styles/App.css'
 import { BrowserRouter, Route, Routes, useLocation} from "react-router-dom";
 import Profile from "./components/Profile";
 import NavigationBar from "./components/NavigationBar";
-import MainPage from "./components/MainPage"
 import Events from "./components/Events";
+import Calendar from "./components/Calendar"
 
 function App() {
   return (
@@ -14,7 +14,7 @@ function App() {
         <Routes>
           <Route path='/' element={<Authorization/>}/> 
           <Route path='/profile' element={<Profile/>}/>
-          <Route path='/calendar' element={<MainPage/>}/>
+          <Route path='/calendar' element={<Calendar/>}/>
           <Route path='/events' element={<Events/>}/>
         </Routes>
       </div>

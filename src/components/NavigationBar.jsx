@@ -18,14 +18,16 @@ const NavigationBar = () => {
                 </Link>
             </label>
             <label className="block w-[61px] h-[61px] mx-auto mb-[23px]">
-                <input type="radio" name="navigation" value="group" className="w-0 h-0 absolute opacity-0"/>
-                <div className='w-[61px] h-[61px] bg-[#333740] rounded-xl px-[12.2px] py-[16.52px]'>
-                    <img src={group} alt='Кнопка групп' className="cursor-pointer w-[36.6px] h-[30.5px]"/>
-                </div>
+                {/* <input type="radio" name="navigation" value="group" className="w-0 h-0 absolute opacity-0"/> */}
+                <Link to='/events'>
+                    <div className='w-[61px] h-[61px] bg-[#333740] rounded-xl px-[12.2px] py-[16.52px]'>
+                        <img src={group} alt='Кнопка групп' className="cursor-pointer w-[36.6px] h-[30.5px]"/>
+                    </div>
+                </Link>
             </label>
             <label className="block w-[61px] h-[61px] mx-auto mb-[23px]">
                 {/* <input type="radio" name="navigation" value="calendar" className="w-0 h-0 absolute opacity-0"/> */}
-                <Link to='/events'>
+                <Link to='/calendar'>
                     <div className="w-[61px] h-[61px] bg-[#333740] rounded-xl px-[14.235px] py-[12.2px]">
                         <img src={calendar} alt='Кнопка календаря' className="cursor-pointer w-[32.53px] h-[36.6px]"/>
                     </div>

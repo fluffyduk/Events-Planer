@@ -2,11 +2,13 @@ import React from "react";
 import Modal from 'react-modal';
 import axios from "axios";
 import avatar from '../photos/avatar.jpg';
+import {useEffect, useState} from "react";
 
 const buttonStyle = 'bg-[#0077EB] w-[160px] h-[40px] rounded-xl font-gilroy_semibold text-white text-xl p-2';
 const textStyleSemibold = 'font-gilroy_semibold text-black';
 const textStyleRegular = 'font-gilroy_regular text-black';
 const taskStyle = 'cursor-pointer relative py-3 pl-10 pr-2 text-lg bg-white rounded-2xl mb-4 w-[65%]';
+const EVENT_PLACEHOLDER_STYLE = 'w-[412px] h-[244px] rounded-3xl border-[4px] border-[#8490A6] bg-[#E7FFF4] p-4 mb-[12px] mr-[12px]';
 
 const modalWindowStyle = {
     content: {
@@ -25,9 +27,38 @@ const modalWindowStyle = {
   };
 
 const Events = () => {
-    const [modalIsOpen, setIsOpen] = React.useState(false);
-    const [children, setChildren] = React.useState([]);
-    const [inputValue, setInputValue] = React.useState("");
+    const [modalIsOpen, setIsOpen] = useState(false);
+    const [children, setChildren] = useState([]);
+    const [inputValue, setInputValue] = useState("");
+    
+    const [events, setEvents] = useState([]);
+
+    const [title, setTitle] = useState('');
+    const [description, setDesc] = useState('');
+    const [date, setDate] = useState('');
+    const [organizers, setOrganizers] = useState('');
+
+    useEffect(() => {
+        if(localStorage.getItem('access_token') === null){                   
+            window.location.href = '/'
+        } else {
+            (async () => {
+                try {
+                    const data = await axios.get('http://127.0.0.1:8000/api/events/', {
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+                        }
+                    });
+                    setEvents(data.data);
+                } catch(e) {
+                    console.log("PIZDA");
+                }
+            })()
+        };
+    }, []);
+
+    console.log(events);
 
     function openModal() {
         setIsOpen(true);
@@ -59,6 +90,27 @@ const Events = () => {
         }
     }
 
+    const createEvent = async (e) => {
+        const data = {
+            id: 193,
+            title: title,
+            description: description,
+            date: "2024-12-12",
+            organizers: [],
+            files: null,
+            tasks: '',
+            participants: [],
+            projects: []
+        };
+
+        axios.post('http://127.0.0.1:8000/api/events/', data, {
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+            }
+        })
+    }
+
     return (
         <div className="bg-[#71798C] w-screen h-auto p-6">
             <h1 className={`${textStyleSemibold} text-[40px] leading-[48px]`}>Мероприятия</h1>
@@ -75,11 +127,19 @@ const Events = () => {
                 {/* <h2 className={`${textStyleSemibold} text-[64px] leading-[76px] mb-6`}>Слет актива 2024</h2> */}
                 <div className="flex gap-6 mb-6">
                     <p className={`${textStyleSemibold} text-[40px] leading-[48px]`}>Название:</p>
-                    <input type="text" className="w-[600px]"></input>
+                    <input type="text" 
+                    className="w-[600px]"
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                    required></input>
                 </div>
                 <div className="flex gap-6 mb-6">
                     <p className={`${textStyleSemibold} text-[40px] leading-[48px]`}>Организатор:</p>
-                    <input type="text" className="w-[600px]"></input>
+                    <input type="text" 
+                    className="w-[600px]"
+                    value={organizers}
+                    onChange={(e) => setOrganizers(e.target.value)}
+                    required></input>
                 </div>
                 <div className="flex gap-6 mb-6">
                     <p className={`${textStyleSemibold} text-[40px] leading-[48px]`}>Задачи:</p>
@@ -88,41 +148,23 @@ const Events = () => {
                 </div>
                 <ul className="p-0 m-0" onClick={makeTaskDone}>
                     {children.map((child, index) => <li key={index} className={`${taskStyle}`}>{child}</li>)}
-                    {/* <li className={`${taskStyle}`}>Подготовить файлы</li> */}
-                    {/* <li className={`${taskStyle}`}>Заказать вкусняшек</li> */}
-                    {/* <li className={`${taskStyle}`}>Повеселиться!</li> */}
                 </ul>
                 <button className={`${buttonStyle} w-[260px]`} onClick={createFile}>Добавить файлы</button>
+                <button className={`${buttonStyle} w-[260px]`} onClick={createEvent}>Создать мероприятие</button>
             </Modal>
             <h2 className={`${textStyleSemibold} text-[32px] leading-[38px] mb-3`}>Текущие:</h2>
-            <div className="flex justify-between">
-                <div className="w-[412px] h-[244px] rounded-3xl border-[4px] border-[#8490A6] bg-[#E7FFF4] p-4">
-                    <h3 className={`${textStyleSemibold} text-[32px] leading-[43px] mb-3`}>Слет актива 2024</h3>
-                    <p className={`${textStyleRegular} text-[20px] leading-[24px] mb-[51px]`}>Мероприятие нацеленное на создание и поддержание актива</p>
-                    <p className={`${textStyleSemibold} text-[20px] leading-[24px] mb-1`}>Организатор</p>
-                    <div className="flex">
-                        <img src={avatar} alt='Аватарка организатора' width='23' height='23' className="rounded-[50%] mr-1"/>
-                        <p className={`${textStyleSemibold} `}>Виноградов Арсений</p>
-                    </div>
-                </div>
-                <div className="w-[412px] h-[244px] rounded-3xl border-[4px] border-[#8490A6] bg-[#E7FFF4] p-4">
-                    <h3 className={`${textStyleSemibold} text-[32px] leading-[43px] mb-3`}>Слет актива 2023</h3>
-                    <p className={`${textStyleRegular} text-[20px] leading-[24px] mb-[51px]`}>Мероприятие нацеленное на создание и поддержание актива</p>
-                    <p className={`${textStyleSemibold} text-[20px] leading-[24px] mb-1`}>Организатор</p>
-                    <div className="flex">
-                        <img src={avatar} alt='Аватарка организатора' width='23' height='23' className="rounded-[50%] mr-1"/>
-                        <p className={`${textStyleSemibold} `}>Виноградов Арсений</p>
-                    </div>
-                </div>
-                <div className="w-[412px] h-[244px] rounded-3xl border-[4px] border-[#8490A6] bg-[#E7FFF4] p-4">
-                    <h3 className={`${textStyleSemibold} text-[32px] leading-[43px] mb-3`}>Слет актива 2022</h3>
-                    <p className={`${textStyleRegular} text-[20px] leading-[24px] mb-[51px]`}>Мероприятие нацеленное на создание и поддержание актива</p>
-                    <p className={`${textStyleSemibold} text-[20px] leading-[24px] mb-1`}>Организатор</p>
-                    <div className="flex">
-                        <img src={avatar} alt='Аватарка организатора' width='23' height='23' className="rounded-[50%] mr-1"/>
-                        <p className={`${textStyleSemibold} `}>Виноградов Арсений</p>
-                    </div>
-                </div>
+            <div className="flex justify-start flex-wrap">
+                {events.map((event) => {
+                    return <div className={`${EVENT_PLACEHOLDER_STYLE}`}>
+                            <h3 className={`${textStyleSemibold} text-[32px] leading-[43px] mb-3`}>{event.title}</h3>
+                            <p className={`${textStyleRegular} text-[20px] leading-[24px] mb-[51px]`}>{event.description}</p>
+                            <p className={`${textStyleSemibold} text-[20px] leading-[24px] mb-1`}>Организатор</p>
+                            <div className="flex">
+                                <img src={avatar} alt='Аватарка организатора' width='23' height='23' className="rounded-[50%] mr-1"/>
+                                <p className={`${textStyleSemibold} `}>{event.organizers[0]}</p>
+                            </div>
+                        </div>
+                })}
             </div>
         </div>
     );
