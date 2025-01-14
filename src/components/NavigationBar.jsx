@@ -8,7 +8,7 @@ import { Link } from "react-router-dom";
 
 const NavigationBar = () => {
     return (
-        <div className='bg-[#474D59] w-[109px] h-[100vh] p-6'>
+        <div className='bg-[#474D59] w-[109px] p-6'>
             <label className="block w-[61px] h-[61px] mx-auto mb-[23px]">
                 {/* <input type="radio" name="navigation" value="profile" className="w-0 h-0 absolute opacity-0" checked/> */}
                 <Link to='/profile'>
