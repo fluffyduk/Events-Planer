@@ -17,6 +17,9 @@ const checkPlaceholder = (data) => {
 const Profile = () => {
     const [userdata, setUserdata] = useState('');
 
+    const [isEditing, setIsEditing] = useState(false);
+    const [name, setName] = useState(userdata.full_name);
+
     useEffect(() => {
         if(localStorage.getItem('access_token') === null){                   
             window.location.href = '/'
@@ -45,12 +48,22 @@ const Profile = () => {
                 <div className="flex items-center mb-3">
                     <div className="h-[29px] w-[8px] bg-[#008CFF] rounded mr-2"/>
                     <h1 className="font-gilroy_semibold text-white text-[32px] mr-auto leading-[38px]">Профиль</h1>
-                    <button className={BUTTON_STYLE}>Редактировать</button>
+                    <button className={BUTTON_STYLE} onClick={
+                        (evt) => {
+                            evt.preventDefault();
+                            setIsEditing(!isEditing);
+                        }
+                    }>{isEditing ? 'Подтвердить' : 'Редактировать'}</button>
                 </div>
                 <div className="flex flex-row items-start gap-6">
                     <img src={avatar} width='185' height='185' alt='Кнопка профиля' className="rounded-[50%]"/>
                     <div className="flex flex-col">
-                        <h2 className="font-gilroy_semibold text-white text-[32px] leading-[38px] mb-6">{userdata.full_name}</h2>
+                            {isEditing 
+                            ? <input className="mb-6" type="text" value={`${userdata.full_name}`} onChange={(e) => {setUserdata({...userdata, full_name: e.target.value })}}/>
+                            : <h2 className="font-gilroy_semibold text-white text-[32px] leading-[38px] mb-6">
+                                {userdata.full_name}
+                            </h2>}
+                        
                         <div className="flex flex-row gap-6 mb-6">
                             {/* <div>
                                 <h3 className={H3_STYLE}>Статус</h3>
@@ -62,18 +75,28 @@ const Profile = () => {
                             </div>
                             <div>
                                 <h3 className={H3_STYLE}>День рождения</h3>
-                                <p className={DATA_STYLE}>{checkPlaceholder(userdata.date_of_birth)}</p>
+                                {isEditing 
+                                ? <input type="date" value={`${userdata.date_of_birth}`} onChange={(e) => {setUserdata({...userdata, date_of_birth: e.target.value })}}/>
+                                : <p className={DATA_STYLE}>{checkPlaceholder(userdata.date_of_birth)}</p>}
+                                {/* <p className={DATA_STYLE}>{checkPlaceholder(userdata.date_of_birth)}</p> */}
                             </div>
                         </div>
-                        <div className="flex flex-row place-content-between gap-6">
+                        <div className="flex flex-row gap-6">
+                            {/* place-content-between */}
                             <div>
                                 <h3 className={H3_STYLE}>Номер телефона</h3>
-                                <p className={DATA_STYLE}>+7 (906) 801-50-01</p>
+                                {isEditing 
+                                ? <input type="phone" value={`${userdata.phone}`} onChange={(e) => {setUserdata({...userdata, phone: e.target.value })}}/>
+                                : <p className={DATA_STYLE}>{checkPlaceholder(userdata.phone)}</p>}
+                                {/* <p className={DATA_STYLE}>+7 (906) 801-50-01</p> */}
                                 {/* checkPlaceholder(userdata.phone) если Максим добавит номер телефона в запрос */}
                             </div>
                             <div>
                                 <h3 className={H3_STYLE}>Почта</h3>
-                                <p className={DATA_STYLE}>rsvingr@gmail.com</p>
+                                {isEditing 
+                                ? <input type="email" value={`${userdata.email}`} onChange={(e) => {setUserdata({...userdata, email: e.target.value })}}/>
+                                : <p className={DATA_STYLE}>{checkPlaceholder(userdata.email)}</p>}
+                                {/* <p className={DATA_STYLE}>rsvingr@gmail.com</p> */}
                                 {/* checkPlaceholder(userdata.email) если Максим добавит почту в запрос */}
                             </div>
                             {/* <div>
@@ -103,7 +126,7 @@ const Profile = () => {
                             <input type="radio" name="event" value="work" className="w-0 h-0 absolute opacity-0"/>
                             <h1 className="font-gilroy_semibold text-white text-[32px] leading-[38px]">Мероприятия</h1>
                         </label>
-                        <button className='bg-[#0077EB] w-[103px] h-[34px] rounded-xl font-gilroy_semibold text-white text-[15px] leading-[18px] p-2'>Сортировка</button>
+                        {/* <button className='bg-[#0077EB] w-[103px] h-[34px] rounded-xl font-gilroy_semibold text-white text-[15px] leading-[18px] p-2'>Сортировка</button> */}
                     </div>
                     {/* <div className="w-auto h-[392px] bg-white rounded-2xl"/> */}
                 </div>

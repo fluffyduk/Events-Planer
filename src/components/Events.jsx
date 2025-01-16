@@ -103,7 +103,7 @@ const Events = () => {
             id: 193,
             title: title,
             description: description,
-            date: "2025-01-11",
+            date: date,
             organizers: [],
             files: null,
             tasks: '',
@@ -117,11 +117,15 @@ const Events = () => {
                 'Authorization': `Bearer ${localStorage.getItem('access_token')}`
             }
         })
+        .then(response => {
+            const successMessage = document.getElementById('success');
+            successMessage.classList.remove('hidden');
+        })
     }
 
     return (
-        <div className="bg-[#71798C] w-screen h-screen p-6">
-            <div className="bg-[#292C33] rounded-3xl p-6 h-full">
+        <div id='background' className="bg-[#71798C] w-screen h-screen p-6">
+            <div className="bg-[#292C33] rounded-3xl p-6 h-full overflow-y-scroll">
                 <div className="flex items-center mb-[24px]">
                     <div className="h-[29px] w-[8px] bg-[#008CFF] rounded mr-2"/>
                     <h1 className={`${textStyleSemibold} text-[40px] leading-[48px] mr-auto`}>Мероприятия</h1>
@@ -134,7 +138,6 @@ const Events = () => {
                     contentLabel="Example Modal"
                     style={modalWindowStyle}
                 >
-                    {/* <h2 className={`${textStyleSemibold} text-[64px] leading-[76px] mb-6`}>Слет актива 2024</h2> */}
                     <div className="flex gap-6 mb-6">
                         <p className={`${textStyleSemibold} text-[40px] leading-[48px]`}>Название:</p>
                         <input type="text" 
@@ -152,17 +155,34 @@ const Events = () => {
                         required></input>
                     </div>
                     <div className="flex gap-6 mb-6">
+                        <p className={`${textStyleSemibold} text-[40px] leading-[48px]`}>Дата:</p>
+                        <input type="date" 
+                        className="w-[600px]"
+                        value={date}
+                        onChange={(e) => setDate(e.target.value)}
+                        required></input>
+                    </div>
+                    {/* <div className="flex gap-6 mb-6">
                         <p className={`${textStyleSemibold} text-[40px] leading-[48px]`}>Задачи:</p>
                         <input type="text" className="w-[600px]" value={inputValue} onChange={e => setInputValue(e.target.value)} placeholder="Задача..."></input>
                         <button onClick={addElement} className={`${buttonStyle} w-[200px]`}>Добавить задачу</button>
                     </div>
                     <ul className="p-0 m-0" onClick={makeTaskDone}>
                         {children.map((child, index) => <li key={index} className={`${taskStyle}`}>{child}</li>)}
-                    </ul>
+                    </ul> */}
                     <button className={`${buttonStyle} w-[260px]`} onClick={createFile}>Добавить файлы</button>
                     <button className={`${buttonStyle} w-[260px]`} onClick={createEvent}>Создать мероприятие</button>
                 </Modal>
-                {/* <h2 className={`${textStyleSemibold} text-[32px] leading-[38px] mb-3`}>Текущие:</h2> */}
+                <div id='success' className="hidden w-[610px] h-fit bg-[#5C6373] z-50 
+                absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2
+                rounded-3xl p-6 text-center">
+                    <p className={`font-gilroy_heavy text-white w-fit text-[32px] mx-auto mb-12`}>Мероприятие успешно создано!</p>
+                    <button onClick={() => {
+                        const successMessage = document.getElementById('success');
+                        successMessage.classList.add('hidden');
+                        setIsOpen(false);
+                    }} className={`${buttonStyle}`}>Подтвердить</button>
+                </div>
                 <div className="flex justify-start flex-wrap">
                     {events.map((event) => {
                         return <Link to={`/event?id=${event.id}`}>

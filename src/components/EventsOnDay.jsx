@@ -3,6 +3,7 @@ import { useLocation } from 'react-router-dom';
 import { format, parse, isSameDay } from 'date-fns';
 import axios from "axios";
 import { Link } from "react-router-dom";
+import Modal from 'react-modal';
 
 const buttonStyle = 'bg-[#0077EB] w-[160px] h-[40px] rounded-xl font-gilroy_semibold text-white text-xl p-2';
 const textStyleSemibold = 'font-gilroy_semibold text-white';
@@ -18,6 +19,76 @@ const EventsOnDay = () => {
     let thisDayEvents = events.filter(event => isSameDay(new Date(event.date), format(eventDate, 'yyyy-MM-dd')))
     if (thisDayEvents === undefined) {
         thisDayEvents = [];
+    }
+
+    const [modalIsOpen, setIsOpen] = useState(false);
+    const [title, setTitle] = useState('');
+    const [description, setDesc] = useState('');
+    const [date, setDate] = useState('');
+    const [organizers, setOrganizers] = useState('');
+
+    const modalWindowStyle = {
+        content: {
+            top: '50%',
+            left: '50%',
+            right: 'auto',
+            bottom: 'auto',
+            marginRight: '-50%',
+            transform: 'translate(-50%, -50%)',
+            backgroundColor: 'rgb(113 121 140)',
+            width: '75%',
+            height: '75%',
+            borderRadius: '24px',
+            padding: '32px',
+        },
+      };
+
+    function openModal() {
+        setIsOpen(true);
+    }
+    
+    function closeModal() {
+        setIsOpen(false);
+    }
+
+    function createFile() {
+        const data = { 
+            doc_type: 'doc', 
+            title: 'ThisIsTitle', 
+            custom_name: 'ThisIsCustomName' 
+        };
+        axios.post('http://127.0.0.1:8000/projects/projects/10/create_google_document/', data, {
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+            }
+        } ,{ withCredentials: true })
+        .then(response => { console.log(response.data); })
+        .catch(error => { console.error('There was an error!', error); });
+    }
+
+    const createEvent = async (e) => {
+        const data = {
+            id: 193,
+            title: title,
+            description: description,
+            date: date,
+            organizers: [],
+            files: null,
+            tasks: '',
+            participants: [],
+            projects: []
+        };
+
+        axios.post('http://127.0.0.1:8000/api/events/', data, {
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+            }
+        })
+        .then(response => {
+            const successMessage = document.getElementById('success');
+            successMessage.classList.remove('hidden');
+        })
     }
 
     useEffect(() => {
@@ -50,8 +121,59 @@ const EventsOnDay = () => {
                 <div className="flex items-center mb-[24px]">
                     <div className="h-[29px] w-[8px] bg-[#008CFF] rounded mr-2"/>
                     <h1 className={`${textStyleSemibold} text-[40px] leading-[48px] mr-auto`}>Календарь</h1>
-                    <button className={`${buttonStyle} w-[260px]`}>Создать мероприятие</button>
+                    <button className={`${buttonStyle} w-[260px]`} onClick={openModal}>Создать мероприятие</button>
                 </div>
+                <Modal
+                isOpen={modalIsOpen}
+                onRequestClose={closeModal}
+                contentLabel="Example Modal"
+                style={modalWindowStyle}
+                >
+                <div className="flex gap-6 mb-6">
+                    <p className={`${textStyleSemibold} text-[40px] leading-[48px]`}>Название:</p>
+                    <input type="text" 
+                    className="w-[600px]"
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                    required></input>
+                </div>
+                <div className="flex gap-6 mb-6">
+                    <p className={`${textStyleSemibold} text-[40px] leading-[48px]`}>Организатор:</p>
+                    <input type="text" 
+                    className="w-[600px]"
+                    value={organizers}
+                    onChange={(e) => setOrganizers(e.target.value)}
+                    required></input>
+                </div>
+                <div className="flex gap-6 mb-6">
+                    <p className={`${textStyleSemibold} text-[40px] leading-[48px]`}>Дата:</p>
+                    <input type="date" 
+                    className="w-[600px]"
+                    value={date}
+                    onChange={(e) => setDate(e.target.value)}
+                    required></input>
+                </div>
+                {/* <div className="flex gap-6 mb-6">
+                    <p className={`${textStyleSemibold} text-[40px] leading-[48px]`}>Задачи:</p>
+                    <input type="text" className="w-[600px]" value={inputValue} onChange={e => setInputValue(e.target.value)} placeholder="Задача..."></input>
+                    <button onClick={addElement} className={`${buttonStyle} w-[200px]`}>Добавить задачу</button>
+                </div>
+                <ul className="p-0 m-0" onClick={makeTaskDone}>
+                    {children.map((child, index) => <li key={index} className={`${taskStyle}`}>{child}</li>)}
+                </ul> */}
+                <button className={`${buttonStyle} w-[260px]`} onClick={createFile}>Добавить файлы</button>
+                <button className={`${buttonStyle} w-[260px]`} onClick={createEvent}>Создать мероприятие</button>
+            </Modal>
+            <div id='success' className="hidden w-[610px] h-fit bg-[#5C6373] z-50 
+            absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2
+            rounded-3xl p-6 text-center">
+                <p className={`font-gilroy_heavy text-white w-fit text-[32px] mx-auto mb-12`}>Мероприятие успешно создано!</p>
+                <button onClick={() => {
+                    const successMessage = document.getElementById('success');
+                    successMessage.classList.add('hidden');
+                    setIsOpen(false);
+                }} className={`${buttonStyle}`}>Подтвердить</button>
+            </div>
                 <h2 className="text-white font-gilroy_heavy text-[48px] leading-[61px]">
                     <span className="text-[100px] leading-[127px] mr-[16px]">{`${format(eventDate, 'dd')}`}</span> {`${curMonth.slice(0, curMonth.length-1)}я`}
                 </h2>
