@@ -26,6 +26,7 @@ const Authorization = () => {
             localStorage.clear();
             localStorage.setItem('access_token', response.data.access);
             localStorage.setItem('refresh_token', response.data.refresh);
+            console.log(response.data);
             axios.defaults.headers.common['Authorization'] = `Bearer ${response.data['access']}`;
             window.location.href = '/profile'
         })

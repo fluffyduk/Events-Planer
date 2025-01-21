@@ -138,21 +138,27 @@ const EventsOnDay = () => {
                     required></input>
                 </div>
                 <div className="flex gap-6 mb-6">
-                    <p className={`${textStyleSemibold} text-[40px] leading-[48px]`}>Организатор:</p>
-                    <input type="text" 
+                    {/* <p className={`${textStyleSemibold} text-[40px] leading-[48px]`}>Организатор:</p>
+                    <select>
+                        <option>Выберите организатора</option>
+                        <option>Роман Гареев</option>
+                        <option>Олег</option>
+                        <option>Я</option>
+                    </select> */}
+                    {/* <input type="text" 
                     className="w-[600px]"
                     value={organizers}
                     onChange={(e) => setOrganizers(e.target.value)}
-                    required></input>
+                    required></input> */}
                 </div>
-                <div className="flex gap-6 mb-6">
+                {/* <div className="flex gap-6 mb-6">
                     <p className={`${textStyleSemibold} text-[40px] leading-[48px]`}>Дата:</p>
                     <input type="date" 
                     className="w-[600px]"
                     value={date}
                     onChange={(e) => setDate(e.target.value)}
                     required></input>
-                </div>
+                </div> */}
                 {/* <div className="flex gap-6 mb-6">
                     <p className={`${textStyleSemibold} text-[40px] leading-[48px]`}>Задачи:</p>
                     <input type="text" className="w-[600px]" value={inputValue} onChange={e => setInputValue(e.target.value)} placeholder="Задача..."></input>

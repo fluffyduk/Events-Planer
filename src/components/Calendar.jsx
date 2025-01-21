@@ -24,6 +24,7 @@ const Calendar = () => {
     // console.log(getDay(firstDayOfMonth), getDay(lastDayOfMonth), startingDayIndex, endingDayIndex);
 
     const [events, setEvents] = useState([]);
+    const [isMy, setIsMy] = useState(false);    
 
     useEffect(() => {
         if(localStorage.getItem('access_token') === null){                   
@@ -64,6 +65,17 @@ const Calendar = () => {
             <div className="flex items-center mb-3">
                 <div className="h-[29px] w-[8px] bg-[#008CFF] rounded mr-2"/>
                 <h1 className="font-gilroy_semibold text-white text-[32px] mr-auto leading-[38px]">Календарь</h1>
+                <div onClick={() => setIsMy(false)} 
+                className={`rounded-tl-xl rounded-bl-xl 
+                font-gilroy_medium text-white text-[16px] leading-[19px] text-center
+                border px-[20px] py-[10px]
+                ${!isMy ? 'bg-[#0077EB]' : 'bg-[#333740]'}`}>Все</div> 
+                <div onClick={() => setIsMy(true)} 
+                className={`rounded-tr-xl rounded-br-xl 
+                    font-gilroy_medium text-white text-[16px] leading-[19px] text-center
+                    border px-[20px] py-[10px]
+                    ${isMy ? 'bg-[#0077EB]' : 'bg-[#333740]'}`}> Мои 
+                </div>
             </div>
             <div className="mb-4 flex justify-center">
                 <button className={CALENDAR_HEADER_STYLE} onClick={makeDateSmaller}>{'<'}</button>
@@ -82,12 +94,15 @@ const Calendar = () => {
                     return <div key={`empty-${index}`} className={`p-2 h-[107px] text-center bg-white border border-black border-opacity-25`}/>;
                 })}
                 {daysInMonth.map((day, index) => {
-                    const event = events.find(event => isSameDay(new Date(event.date), day));
+                    let event = events.find(event => isSameDay(new Date(event.date), day));
+                    // console.log(event);
                     let eventsAmount = 0
                     if (event !== undefined) {
+                        if (isMy && !(event.participants.includes(+localStorage.getItem('current_profile_id')) || event.organizers.includes(+localStorage.getItem('current_profile_id')))) {
+                            event = undefined;
+                        }
                         eventsAmount = events.filter(event => isSameDay(new Date(event.date), day)).length
                     }
-                    console.log(event)
                     return <div key={index}
                     className={`h-[107px] text-center bg-white border relative
                         text-[100px] text-[#292C3340] leading-[127px] font-gilroy_heavy

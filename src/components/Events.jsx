@@ -4,12 +4,12 @@ import axios from "axios";
 import avatar from '../photos/avatar.jpg';
 import {useEffect, useState} from "react";
 import { Link } from "react-router-dom";
+import { format } from 'date-fns';
 
 const buttonStyle = 'bg-[#0077EB] w-[160px] h-[40px] rounded-xl font-gilroy_semibold text-white text-xl p-2';
 const textStyleSemibold = 'font-gilroy_semibold text-white';
 const textStyleRegular = 'font-gilroy_regular text-black';
-const taskStyle = 'cursor-pointer relative py-3 pl-10 pr-2 text-lg bg-white rounded-2xl mb-4 w-[65%]';
-const EVENT_PLACEHOLDER_STYLE = 'w-[412px] h-[244px] rounded-3xl bg-[#36536A] p-4 mb-[12px] mr-[12px]';
+const EVENT_PLACEHOLDER_STYLE = 'w-[412px] h-[244px] rounded-3xl bg-[#36536A] p-6 mb-[12px] mr-[12px]';
 
 const modalWindowStyle = {
     content: {
@@ -29,15 +29,12 @@ const modalWindowStyle = {
 
 const Events = () => {
     const [modalIsOpen, setIsOpen] = useState(false);
-    const [children, setChildren] = useState([]);
-    const [inputValue, setInputValue] = useState("");
+    const [users, setUsers] = useState([]);
     
     const [events, setEvents] = useState([]);
 
     const [title, setTitle] = useState('');
     const [description, setDesc] = useState('');
-    const [date, setDate] = useState('');
-    const [organizers, setOrganizers] = useState('');
 
     useEffect(() => {
         if(localStorage.getItem('access_token') === null){                   
@@ -52,14 +49,28 @@ const Events = () => {
                         }
                     });
                     setEvents(data.data);
+
+                    const usersData = await axios.get('http://127.0.0.1:8000/api/users/', {
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+                        }
+                    });
+                    setUsers(usersData.data);
                 } catch(e) {
-                    console.log("PIZDA");
+                    console.log(e);
                 }
             })()
         };
     }, []);
 
+    let orgs = {};
+    for (const user of users) {
+        orgs[user.id] = user.full_name;
+    }
+
     console.log(events);
+    console.log(users);
 
     function openModal() {
         setIsOpen(true);
@@ -84,31 +95,19 @@ const Events = () => {
         .catch(error => { console.error('There was an error!', error); });
     }
 
-    function addElement() {
-        setChildren((oldArray) => [
-            ...oldArray,
-            inputValue
-        ]);
-        setInputValue("");
-    }
-
-    function makeTaskDone(evt) {
-        if (evt.target.tagName === 'LI') {
-            evt.target.style.display = 'none';
-        }
-    }
-
     const createEvent = async (e) => {
         const data = {
             id: 193,
             title: title,
             description: description,
-            date: date,
-            organizers: [],
+            date: format(new Date(), 'yyyy-MM-dd'),
+            // organizers: [1],
+            organizers: [localStorage.getItem('current_profile_id')],
             files: null,
             tasks: '',
-            participants: [],
-            projects: []
+            participants: [1],
+            projects: [],
+            is_past: false
         };
 
         axios.post('http://127.0.0.1:8000/api/events/', data, {
@@ -146,22 +145,22 @@ const Events = () => {
                         onChange={(e) => setTitle(e.target.value)}
                         required></input>
                     </div>
-                    <div className="flex gap-6 mb-6">
+                    {/* <div className="flex gap-6 mb-6">
                         <p className={`${textStyleSemibold} text-[40px] leading-[48px]`}>Организатор:</p>
                         <input type="text" 
                         className="w-[600px]"
                         value={organizers}
                         onChange={(e) => setOrganizers(e.target.value)}
                         required></input>
-                    </div>
-                    <div className="flex gap-6 mb-6">
+                    </div> */}
+                    {/* <div className="flex gap-6 mb-6">
                         <p className={`${textStyleSemibold} text-[40px] leading-[48px]`}>Дата:</p>
                         <input type="date" 
                         className="w-[600px]"
                         value={date}
                         onChange={(e) => setDate(e.target.value)}
                         required></input>
-                    </div>
+                    </div> */}
                     {/* <div className="flex gap-6 mb-6">
                         <p className={`${textStyleSemibold} text-[40px] leading-[48px]`}>Задачи:</p>
                         <input type="text" className="w-[600px]" value={inputValue} onChange={e => setInputValue(e.target.value)} placeholder="Задача..."></input>
@@ -170,10 +169,10 @@ const Events = () => {
                     <ul className="p-0 m-0" onClick={makeTaskDone}>
                         {children.map((child, index) => <li key={index} className={`${taskStyle}`}>{child}</li>)}
                     </ul> */}
-                    <button className={`${buttonStyle} w-[260px]`} onClick={createFile}>Добавить файлы</button>
+                    {/* <button className={`${buttonStyle} w-[260px]`} onClick={() => {setFilesModalIsOpen(true)}}>Добавить файлы</button> */}
                     <button className={`${buttonStyle} w-[260px]`} onClick={createEvent}>Создать мероприятие</button>
                 </Modal>
-                <div id='success' className="hidden w-[610px] h-fit bg-[#5C6373] z-50 
+                <div id='success' className="hidden w-[610px] h-fit bg-[#5C6373] z-50
                 absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2
                 rounded-3xl p-6 text-center">
                     <p className={`font-gilroy_heavy text-white w-fit text-[32px] mx-auto mb-12`}>Мероприятие успешно создано!</p>
@@ -185,17 +184,22 @@ const Events = () => {
                 </div>
                 <div className="flex justify-start flex-wrap">
                     {events.map((event) => {
+                        if (!event.is_past) {
                         return <Link to={`/event?id=${event.id}`}>
-                            <div className={`${EVENT_PLACEHOLDER_STYLE}`}>
+                            <div className={`${EVENT_PLACEHOLDER_STYLE} flex flex-col`}>
                                 <h3 className={`${textStyleSemibold} text-[32px] leading-[43px] mb-3 text-white`}>{event.title}</h3>
                                 <p className={`${textStyleRegular} text-[20px] leading-[24px] mb-[51px] text-white`}>{event.description}</p>
-                                <p className={`${textStyleSemibold} text-[20px] leading-[24px] mb-1 text-white`}>Организатор</p>
+                                <p className={`${textStyleSemibold} text-[20px] leading-[24px] mb-1 text-white mt-auto`}>Организатор</p>
                                 <div className="flex">
                                     <img src={avatar} alt='Аватарка организатора' width='23' height='23' className="rounded-[50%] mr-1"/>
-                                    <p className={`${textStyleSemibold} `}>{event.organizers[0]}</p>
+                                    {   
+                                        event.organizers[0] !== undefined
+                                        ? <p className={`${textStyleSemibold}`}>{orgs[event.organizers[0]]}</p>
+                                        : <p className={`${textStyleSemibold}`}>Не указано</p>
+                                    }
                                 </div>
                             </div>
-                        </Link>
+                        </Link>}
                     })}
                 </div>
             </div>

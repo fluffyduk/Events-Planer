@@ -7,6 +7,8 @@ import Events from "./components/Events";
 import Calendar from "./components/Calendar"
 import EventsOnDay from "./components/EventsOnDay";
 import Event from "./components/Event";
+import Team from "./components/Team";
+import Archive from "./components/Archive";
 
 function App() {
   return (
@@ -20,6 +22,8 @@ function App() {
           <Route path='/events' element={<Events/>}/>
           <Route path='/event-page' element={<EventsOnDay/>}/>
           <Route path='/event' element={<Event/>}/>
+          <Route path='/team' element={<Team/>}/>
+          <Route path='/archive' element={<Archive/>}/>
         </Routes>
       </div>
     </BrowserRouter>

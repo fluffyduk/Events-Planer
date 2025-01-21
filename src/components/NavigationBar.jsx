@@ -2,8 +2,8 @@ import React from "react";
 import profile from '../vector-images/profileicon.svg';
 import group from '../vector-images/groupicon.svg';
 import calendar from '../vector-images/calendaricon.svg';
-import files from '../vector-images/filesicon.svg';
-import statistics from '../vector-images/statisticsicon.svg';
+import archive from '../vector-images/archiveicon.svg';
+import events from '../vector-images/eventsicon.svg';
 import { Link } from "react-router-dom";
 
 const NavigationBar = () => {
@@ -19,9 +19,11 @@ const NavigationBar = () => {
             </label>
             <label className="block w-[61px] h-[61px] mx-auto mb-[23px]">
                 {/* <input type="radio" name="navigation" value="group" className="w-0 h-0 absolute opacity-0"/> */}
-                <div className='w-[61px] h-[61px] bg-[#333740] rounded-xl px-[12.2px] py-[16.52px]'>
-                    <img src={group} alt='Кнопка групп' className="cursor-pointer w-[36.6px] h-[30.5px]"/>
-                </div>
+                <Link to='/team'>
+                    <div className='w-[61px] h-[61px] bg-[#333740] rounded-xl px-[12.2px] py-[16.52px]'>
+                        <img src={group} alt='Кнопка групп' className="cursor-pointer w-[36.6px] h-[30.5px]"/>
+                    </div>
+                </Link>
             </label>
             <label className="block w-[61px] h-[61px] mx-auto mb-[23px]">
                 {/* <input type="radio" name="navigation" value="calendar" className="w-0 h-0 absolute opacity-0"/> */}
@@ -35,7 +37,15 @@ const NavigationBar = () => {
                 {/* <input type="radio" name="navigation" value="files" className="w-0 h-0 absolute opacity-0"/> */}
                 <Link to='/events'>
                     <div className="w-[61px] h-[61px] bg-[#333740] rounded-xl p-[12.2px]">
-                        <img src={files} alt='Кнопка файлов' className="cursor-pointer w-[36.6px] h-[36.6px]"/>
+                        <img src={events} alt='Кнопка файлов' className="cursor-pointer w-[36.6px] h-[36.6px]"/>
+                    </div>
+                </Link>
+            </label>
+            <label className="block w-[61px] h-[61px] mx-auto mb-[23px]">
+                {/* <input type="radio" name="navigation" value="files" className="w-0 h-0 absolute opacity-0"/> */}
+                <Link to='/archive'>
+                    <div className="w-[61px] h-[61px] bg-[#333740] rounded-xl p-[12.2px]">
+                        <img src={archive} alt='Кнопка файлов' className="cursor-pointer w-[36.6px] h-[36.6px]"/>
                     </div>
                 </Link>
             </label>
