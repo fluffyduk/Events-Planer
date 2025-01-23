@@ -24,7 +24,7 @@ const Profile = () => {
     const [userEvents, setUserEvents] = useState([]);
 
     const [isEditing, setIsEditing] = useState(false);
-    // const [name, setName] = useState(userdata.full_name);
+    const [users, setUsers] = useState([]);
 
     const query = new URLSearchParams(useLocation().search);
     const profileId = query.get('id');
@@ -56,6 +56,14 @@ const Profile = () => {
                     }
                     setUserdata(data.data.profile);
                     setUserEvents(data.data.events);
+
+                    const usersData = await axios.get('http://127.0.0.1:8000/api/users/', {
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+                        }
+                    });
+                    setUsers(usersData.data);
                 } catch(e) {
                     console.log(e);
                     console.log('not auth');
@@ -63,6 +71,11 @@ const Profile = () => {
             })()
         };
     }, [profileId]);
+
+    let orgs = {};
+    for (const us of users) {
+        orgs[us.id] = us.full_name;
+    }
 
     const handleProfileUpdate = () => {
         const dataInForm = new FormData();
@@ -185,20 +198,20 @@ const Profile = () => {
             </div>
             {+localStorage.getItem('access_level') >= 2 || +localStorage.getItem('current_profile_id') === userdata.id
             ? <div className="flex gap-6">
-                <div className="w-[303px] h-[490px] bg-[#292C33] rounded-3xl p-6 mt-6">
+                {/* <div className="w-[303px] h-[490px] bg-[#292C33] rounded-3xl p-6 mt-6">
                     <div className="flex items-center mb-3">
                         <div className="h-[29px] w-[8px] bg-[#008CFF] rounded mr-2"/>
                         <h1 className="font-gilroy_semibold text-white text-[32px] mr-auto leading-[38px]">Календарь</h1>
                     </div>
                     <div className="w-auto h-[392px] bg-white rounded-2xl"/>
-                </div>
+                </div> */}
                 <div className="w-[956px] h-[558px] bg-[#292C33] rounded-3xl p-6 mt-6 overflow-y-scroll">
                     <div className="flex items-center mb-3">
                         <div className="h-[29px] w-[8px] bg-[#008CFF] rounded mr-2"/>
-                            <label className="mr-3">
+                            {/* <label className="mr-3">
                                 <input type="radio" name="event" value="work" className="w-0 h-0 absolute opacity-0" checked/>
                                 <h1 className="font-gilroy_semibold text-white text-[32px] leading-[38px] opacity-50">Задачи</h1>
-                            </label>
+                            </label> */}
                             <label className="mr-auto">
                                 <input type="radio" name="event" value="work" className="w-0 h-0 absolute opacity-0"/>
                                 <h1 className="font-gilroy_semibold text-white text-[32px] leading-[38px]">Мероприятия</h1>
@@ -215,18 +228,8 @@ const Profile = () => {
                                     <div className="flex">
                                         <img src={avatar_placeholder} alt='Аватарка организатора' width='23' height='23' className="rounded-[50%] mr-1"/>
                                         {   event.organizers[0] !== undefined
-                                            ?
-                                            // axios.get(`http://127.0.0.1:8000/api/profile/${event.organizers[0]}/`, {
-                                            //     headers: {
-                                            //         'Authorization': `Bearer ${localStorage.getItem('access_token')}`
-                                            //     }
-                                            // })
-                                            // .then(response => {
-                                            //     <p className={`${textStyleSemibold}`}>{response.full_name}</p>
-                                            // })
-                                            <p className={`${textStyleSemibold}`}>Указано, но пока не работает</p>
-                                            :
-                                            <p className={`${textStyleSemibold}`}>Не указано</p>
+                                            ? <p className={`${textStyleSemibold}`}>{orgs[event.organizers[0]]}</p>
+                                            : <p className={`${textStyleSemibold}`}>Не указано</p>
                                         }
                                     </div>
                                 </div>

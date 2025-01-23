@@ -25,6 +25,7 @@ content: {
 };
 
 const formateDate = (date) => {
+    console.log(date);
     if (date !== undefined) {
         date = parse(date, 'yyyy-MM-dd', new Date());
         const curMonth = date.toLocaleString('ru', {month: "long"});
@@ -36,7 +37,9 @@ const formateDate = (date) => {
 
 const Event = () => {
     const eventData = Object.fromEntries(new URLSearchParams(useLocation().search));
-    const [event, setEvent] = useState('');
+    const [event, setEvent] = useState([]);
+    const [users, setUsers] = useState([]);
+    const [project, setProject] = useState([]);
 
     const [isEditing, setIsEditing] = useState(false);
     const [isFolderOpen, setIsFolderOpen] = useState(false);
@@ -55,12 +58,33 @@ const Event = () => {
                         }
                     });
                     setEvent(data.data);
+
+                    const usersData = await axios.get('http://127.0.0.1:8000/api/users/', {
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+                        }
+                    });
+                    setUsers(usersData.data);
+
+                    const proj = await axios.get(`http://127.0.0.1:8000/projects/projects/${eventData.id}/`, {
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+                        }
+                    });
+                    setProject(proj.data);
                 } catch(e) {
                     console.log(e);
                 }
             })()
         };
     }, [eventData.id]);
+
+    let orgs = {};
+    for (const user of users) {
+        orgs[user.id] = user.full_name;
+    }
 
     // useEffect(() => { 
     //     if (event) { 
@@ -104,6 +128,9 @@ const Event = () => {
 
     const handleChangeStatus = (newStatus) => {
         setEvent({...event, is_past: newStatus});
+        if (newStatus === false) {
+            setEvent({...event, date: format(new Date(), 'yyyy-MM-dd')});
+        }
         updateEvent(event);
     }
 
@@ -122,11 +149,28 @@ const Event = () => {
                 'Authorization': `Bearer ${localStorage.getItem('access_token')}`
             }
         } ,{ withCredentials: true })
-        .then(response => { console.log(response.data); })
-        .catch(error => { console.error('There was an error!', error); });
+        .then(response => {
+            console.log(response);
+            const message = document.getElementById('succes_file');
+            message.classList.remove('hidden');
+            setFilesModalIsOpen(false);
+            setTimeout(() => {
+                message.classList.add('hidden');
+            }, 3000);
+        })
+        .catch(error => { 
+            console.error('There was an error!', error);
+            const message = document.getElementById('error_file');
+            message.classList.remove('hidden');
+            setTimeout(() => {
+                message.classList.add('hidden');
+            }, 3000);
+        });
     }
 
     console.log(event);
+    console.log(users);
+    console.log(project);
 
     return (
         <div className='mx-auto p-6 bg-[#71798C] w-screen h-screen'>
@@ -167,7 +211,7 @@ const Event = () => {
                     isOpen={filesModalIsOpen}
                     contentLabel="Example Modal"
                     style={filesModalWindowStyle}
-                    // onRequestClose={closeModal()} крашит
+                    onRequestClose={closeModal}
                     >
                         <h2 className={`font-gilroy_bold text-white text-[32px] leading-[39px] text-center mb-[41px]`}>Создать Google сервис</h2>
                         <div className="flex gap-6 mb-6">
@@ -192,7 +236,7 @@ const Event = () => {
                             className=""
                             required></input>
                         </div>
-                        <button className={`${buttonStyle} w-[260px]`} onClick={() => {
+                        <button className={`${buttonStyle} w-[260px] block mx-auto`} onClick={() => {
                             const select = document.getElementById('document_type');
                             const type = select.options[select.selectedIndex].value;
                             const doc_name = document.getElementById('doc_name');
@@ -229,11 +273,28 @@ const Event = () => {
                     : <p className="font-gilroy_bold text-[24px] text-white leading-[30px] mb-[12px]">{event.description}</p>
                     }
                     <p className={`${textStyleSemibold} text-[16px] leading-[20px] text-opacity-50`}>Организаторы</p>
-                    {/* бля тут надо сделать загрузку организаторов, я пока хз как это делать */}
+                    {isEditing
+                    ?
+                    <div>
+                        {event.organizers?.map((org) => {
+                            return <p className="text-white font-gilroy_semibold text-[22px] leading-[27px] mb-3">{orgs[org]}</p>
+                        })}
+                        <select multiple>
+                            {users?.map((user) => {
+                                return <option value={user.id} onClick={(evt) => {event.organizers.push(evt.target.value)}}>{user.full_name}</option>
+                            })}
+                        </select>
+                    </div>
+                    :
+                    event.organizers?.map((org) => {
+                        return <p className="text-white font-gilroy_semibold text-[22px] leading-[27px] mb-3">{orgs[org]}</p>
+                    })
+                    }
                     <p className={`${textStyleSemibold} text-[16px] leading-[20px] text-opacity-50`}>Файлы</p>
                     <button className="bg-[#1F4466] w-[130px] h-[41px] rounded-xl px-[12px] py-[8px] text-white font-gilroy_semibold font-[20px] leading-[25px]"
                     onClick={() => {setIsFolderOpen(true)}}>Основное</button>
-                    {/* Тут пока тоже хз, надо как-то разобраться, грузятся ли папки и файлы с ними */}
+                    {/* {project?.
+                    } */}
                 </div>
                 <div className="flex flex-col">
                     <p className={`${textStyleSemibold} text-[16px] leading-[20px] text-opacity-50`}>Статус</p>
@@ -245,6 +306,14 @@ const Event = () => {
                 </div>
             </div>
                 }
+            </div>
+            <div id='succes_file' className="hidden bg-[#1E632A80] w-[600px] h-[60px] rounded-[15px] border-[4px] border-[#1E632A] 
+            text-center p-[15px] absolute top-3/4 left-1/2 -translate-x-1/2 z-50">
+                <p className="text-white text-[24px] leading-[30px] font-gilroy_bold">Google сервис создан</p>
+            </div>
+            <div id='error_file' className="hidden bg-[#631E1E80] w-[600px] h-[60px] rounded-[15px] border-[4px] border-[#631E1E] 
+            text-center p-[15px] absolute top-3/4 left-1/2 -translate-x-1/2 z-50">
+                <p className="text-white text-[24px] leading-[30px] font-gilroy_bold">Google сервис не создан</p>
             </div>
         </div>
     );

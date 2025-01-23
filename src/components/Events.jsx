@@ -1,10 +1,10 @@
 import React from "react";
 import Modal from 'react-modal';
 import axios from "axios";
-import avatar from '../photos/avatar.jpg';
 import {useEffect, useState} from "react";
 import { Link } from "react-router-dom";
 import { format } from 'date-fns';
+import avatar_placeholder from "../photos/avatar_placeholder.png";
 
 const buttonStyle = 'bg-[#0077EB] w-[160px] h-[40px] rounded-xl font-gilroy_semibold text-white text-xl p-2';
 const textStyleSemibold = 'font-gilroy_semibold text-white';
@@ -191,7 +191,7 @@ const Events = () => {
                                 <p className={`${textStyleRegular} text-[20px] leading-[24px] mb-[51px] text-white`}>{event.description}</p>
                                 <p className={`${textStyleSemibold} text-[20px] leading-[24px] mb-1 text-white mt-auto`}>Организатор</p>
                                 <div className="flex">
-                                    <img src={avatar} alt='Аватарка организатора' width='23' height='23' className="rounded-[50%] mr-1"/>
+                                    <img src={avatar_placeholder} alt='Аватарка организатора' width='23' height='23' className="rounded-[50%] mr-1"/>
                                     {   
                                         event.organizers[0] !== undefined
                                         ? <p className={`${textStyleSemibold}`}>{orgs[event.organizers[0]]}</p>
