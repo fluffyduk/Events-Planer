@@ -28,7 +28,7 @@ const Profile = () => {
 
     const query = new URLSearchParams(useLocation().search);
     const profileId = query.get('id');
-    console.log(profileId);
+    // console.log(profileId);
 
     // console.log(localStorage.getItem('access_token'));
 

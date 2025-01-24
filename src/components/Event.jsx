@@ -67,7 +67,7 @@ const Event = () => {
                     });
                     setUsers(usersData.data);
 
-                    const proj = await axios.get(`http://127.0.0.1:8000/projects/projects/${eventData.id}/`, {
+                    const proj = await axios.get(`http://127.0.0.1:8000/projects/projects/`, {
                         headers: {
                             'Content-Type': 'application/json',
                             'Authorization': `Bearer ${localStorage.getItem('access_token')}`
@@ -86,17 +86,10 @@ const Event = () => {
         orgs[user.id] = user.full_name;
     }
 
-    // useEffect(() => { 
-    //     if (event) { 
-    //         axios.put(`http://127.0.0.1:8000/api/event/${eventData.id}/`, event, { 
-    //             headers: { 
-    //                 'Content-Type': 'application/json', 
-    //                 'Authorization': `Bearer ${localStorage.getItem('access_token')}` 
-    //             } 
-    //         }) 
-    //         .then(response => { console.log(response); }) 
-    //         .catch(error => { console.log(error); }); } 
-    //     }, [event, event.is_past, eventData.id]);
+    let projects = {};
+    for (const pro of project) {
+        projects[pro.id] = pro;
+    }
 
     const updateEvent = (updatedEvent) => {
         console.log(updatedEvent);
@@ -168,13 +161,42 @@ const Event = () => {
         });
     }
 
+    function createFolder() {
+        const data = { 
+            title: document.getElementById('folderName').value,
+            event_id: eventData.id
+        };
+        axios.post('http://127.0.0.1:8000/projects/projects/create/', data, {
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+            }
+        } ,{ withCredentials: true })
+        .then(response => {
+            console.log(response);
+            document.getElementById('folderName').value = '';
+            const message = document.getElementById('succes_folder');
+            message.classList.remove('hidden');
+            setTimeout(() => {
+                message.classList.add('hidden');
+            }, 3000);
+        })
+        .catch(error => { 
+            console.error('There was an error!', error);
+            const message = document.getElementById('error_folder');
+            message.classList.remove('hidden');
+            setTimeout(() => {
+                message.classList.add('hidden');
+            }, 3000);
+        });
+    }
+
     console.log(event);
-    console.log(users);
+    // console.log(users);
     console.log(project);
 
     return (
         <div className='mx-auto p-6 bg-[#71798C] w-screen h-screen'>
-            <div className="bg-[#292C33] rounded-3xl p-6 h-full">
+            <div className="bg-[#292C33] rounded-3xl p-6 h-full overflow-y-auto">
                 <div className="flex items-center mb-[24px]">
                     <div className="h-[29px] w-[8px] bg-[#008CFF] rounded mr-2"/>
                     <h1 className={`${textStyleSemibold} text-[40px] leading-[48px] mr-auto`}>Мероприятия</h1>
@@ -281,7 +303,11 @@ const Event = () => {
                         })}
                         <select multiple>
                             {users?.map((user) => {
-                                return <option value={user.id} onClick={(evt) => {event.organizers.push(evt.target.value)}}>{user.full_name}</option>
+                                return <option value={user.id} onClick={(evt) => {
+                                    if (event.organizers.indexOf(evt.target.value) === -1) {
+                                        event.organizers.push(evt.target.value)
+                                    }
+                                }}>{user.full_name}</option>
                             })}
                         </select>
                     </div>
@@ -291,10 +317,20 @@ const Event = () => {
                     })
                     }
                     <p className={`${textStyleSemibold} text-[16px] leading-[20px] text-opacity-50`}>Файлы</p>
-                    <button className="bg-[#1F4466] w-[130px] h-[41px] rounded-xl px-[12px] py-[8px] text-white font-gilroy_semibold font-[20px] leading-[25px]"
-                    onClick={() => {setIsFolderOpen(true)}}>Основное</button>
-                    {/* {project?.
-                    } */}
+                    <div className="flex flex-col">
+                        {event.projects?.map((proId) => {
+                            return <Link to={`/folder?projid=${proId}&eventid=${event.id}`} className="bg-[#1F4466] w-[200px] h-fit rounded-xl px-[12px] py-[8px] text-white font-gilroy_semibold font-[20px] leading-[25px] mb-3"
+                            onClick={() => {setIsFolderOpen(true)}}>{projects[proId]?.title}</Link>
+                        })
+                        }
+                    </div>
+                    {isEditing
+                    ?<form id='folderForm'>
+                        <input type="text" id="folderName" required/>
+                        <button type="button" onClick={(evt) => {createFolder()}} className={`${buttonStyle}`}>Отправить</button>
+                    </form>
+                    :<div></div>
+                    }
                 </div>
                 <div className="flex flex-col">
                     <p className={`${textStyleSemibold} text-[16px] leading-[20px] text-opacity-50`}>Статус</p>
@@ -312,6 +348,14 @@ const Event = () => {
                 <p className="text-white text-[24px] leading-[30px] font-gilroy_bold">Google сервис создан</p>
             </div>
             <div id='error_file' className="hidden bg-[#631E1E80] w-[600px] h-[60px] rounded-[15px] border-[4px] border-[#631E1E] 
+            text-center p-[15px] absolute top-3/4 left-1/2 -translate-x-1/2 z-50">
+                <p className="text-white text-[24px] leading-[30px] font-gilroy_bold">Google сервис не создан</p>
+            </div>
+            <div id='succes_folder' className="hidden bg-[#1E632A80] w-[600px] h-[60px] rounded-[15px] border-[4px] border-[#1E632A] 
+            text-center p-[15px] absolute top-3/4 left-1/2 -translate-x-1/2 z-50">
+                <p className="text-white text-[24px] leading-[30px] font-gilroy_bold">Папка создана</p>
+            </div>
+            <div id='error_folder' className="hidden bg-[#631E1E80] w-[600px] h-[60px] rounded-[15px] border-[4px] border-[#631E1E] 
             text-center p-[15px] absolute top-3/4 left-1/2 -translate-x-1/2 z-50">
                 <p className="text-white text-[24px] leading-[30px] font-gilroy_bold">Google сервис не создан</p>
             </div>
