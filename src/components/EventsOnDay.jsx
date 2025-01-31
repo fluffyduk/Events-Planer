@@ -4,6 +4,7 @@ import { format, parse, isSameDay } from 'date-fns';
 import axios from "axios";
 import { Link } from "react-router-dom";
 import Modal from 'react-modal';
+import { BASE_URL } from "./Globals";
 
 const buttonStyle = 'bg-[#0077EB] w-[160px] h-[40px] rounded-xl font-gilroy_semibold text-white text-xl p-2';
 const textStyleSemibold = 'font-gilroy_semibold text-white';
@@ -57,12 +58,12 @@ const EventsOnDay = () => {
             title: 'ThisIsTitle', 
             custom_name: 'ThisIsCustomName' 
         };
-        axios.post('http://127.0.0.1:8000/projects/projects/10/create_google_document/', data, {
+        axios.post(`${BASE_URL}/projects/projects/10/create_google_document/`, data, {
             headers: {
                 'Authorization': `Bearer ${localStorage.getItem('access_token')}`
             }
         } ,{ withCredentials: true })
-        .then(response => { console.log(response.data); })
+        .then(response => {})
         .catch(error => { console.error('There was an error!', error); });
     }
 
@@ -80,7 +81,7 @@ const EventsOnDay = () => {
             is_past: false
         };
 
-        axios.post('http://127.0.0.1:8000/api/events/', data, {
+        axios.post(`${BASE_URL}/api/events/`, data, {
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${localStorage.getItem('access_token')}`
@@ -98,7 +99,7 @@ const EventsOnDay = () => {
         } else {
             (async () => {
                 try {
-                    const data = await axios.get('http://127.0.0.1:8000/api/events/', {
+                    const data = await axios.get(`${BASE_URL}/api/events/`, {
                         headers: {
                             'Content-Type': 'application/json',
                             'Authorization': `Bearer ${localStorage.getItem('access_token')}`
@@ -111,10 +112,6 @@ const EventsOnDay = () => {
             })()
         };
     }, []);
-
-    console.log(events);
-    console.log(format(eventDate, 'yyyy-MM-dd'));
-    console.log(thisDayEvents);
 
     return (
         <div className='mx-auto p-6 bg-[#71798C] w-screen h-screen'>
@@ -138,20 +135,20 @@ const EventsOnDay = () => {
                     onChange={(e) => setTitle(e.target.value)}
                     required></input>
                 </div>
-                <div className="flex gap-6 mb-6">
-                    {/* <p className={`${textStyleSemibold} text-[40px] leading-[48px]`}>Организатор:</p>
+                {/* <div className="flex gap-6 mb-6">
+                    <p className={`${textStyleSemibold} text-[40px] leading-[48px]`}>Организатор:</p>
                     <select>
                         <option>Выберите организатора</option>
                         <option>Роман Гареев</option>
                         <option>Олег</option>
                         <option>Я</option>
-                    </select> */}
-                    {/* <input type="text" 
+                    </select>
+                    <input type="text" 
                     className="w-[600px]"
                     value={organizers}
                     onChange={(e) => setOrganizers(e.target.value)}
-                    required></input> */}
-                </div>
+                    required></input>
+                </div> */}
                 {/* <div className="flex gap-6 mb-6">
                     <p className={`${textStyleSemibold} text-[40px] leading-[48px]`}>Дата:</p>
                     <input type="date" 

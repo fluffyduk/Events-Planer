@@ -5,6 +5,7 @@ import {useEffect, useState} from "react";
 import { Link } from "react-router-dom";
 import { format } from 'date-fns';
 import avatar_placeholder from "../photos/avatar_placeholder.png";
+import { BASE_URL } from "./Globals";
 
 const buttonStyle = 'bg-[#0077EB] w-[160px] h-[40px] rounded-xl font-gilroy_semibold text-white text-xl p-2';
 const textStyleSemibold = 'font-gilroy_semibold text-white';
@@ -42,7 +43,7 @@ const Events = () => {
         } else {
             (async () => {
                 try {
-                    const data = await axios.get('http://127.0.0.1:8000/api/events/', {
+                    const data = await axios.get(`${BASE_URL}/api/events/`, {
                         headers: {
                             'Content-Type': 'application/json',
                             'Authorization': `Bearer ${localStorage.getItem('access_token')}`
@@ -50,7 +51,7 @@ const Events = () => {
                     });
                     setEvents(data.data);
 
-                    const usersData = await axios.get('http://127.0.0.1:8000/api/users/', {
+                    const usersData = await axios.get(`${BASE_URL}/api/users/`, {
                         headers: {
                             'Content-Type': 'application/json',
                             'Authorization': `Bearer ${localStorage.getItem('access_token')}`
@@ -69,9 +70,6 @@ const Events = () => {
         orgs[user.id] = user.full_name;
     }
 
-    console.log(events);
-    console.log(users);
-
     function openModal() {
         setIsOpen(true);
     }
@@ -86,12 +84,12 @@ const Events = () => {
             title: 'ThisIsTitle', 
             custom_name: 'ThisIsCustomName' 
         };
-        axios.post('http://127.0.0.1:8000/projects/projects/10/create_google_document/', data, {
+        axios.post(`${BASE_URL}/projects/projects/10/create_google_document/`, data, {
             headers: {
                 'Authorization': `Bearer ${localStorage.getItem('access_token')}`
             }
         } ,{ withCredentials: true })
-        .then(response => { console.log(response.data); })
+        .then(response => {})
         .catch(error => { console.error('There was an error!', error); });
     }
 
@@ -109,7 +107,7 @@ const Events = () => {
             is_past: false
         };
 
-        axios.post('http://127.0.0.1:8000/api/events/', data, {
+        axios.post(`${BASE_URL}/api/events/`, data, {
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${localStorage.getItem('access_token')}`

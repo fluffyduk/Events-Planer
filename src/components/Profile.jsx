@@ -4,6 +4,7 @@ import axios from "axios";
 import {useEffect, useState} from "react";
 import { Link } from "react-router-dom";
 import avatar_placeholder from "../photos/avatar_placeholder.png";
+import { BASE_URL } from "./Globals";
 
 const H3_STYLE = 'font-gilroy_semibold text-white opacity-50 text-[16px] leading-[19px] mb-[6px]';
 const DATA_STYLE = 'font-gilroy_semibold text-white text-[24px] leading-[17px]';
@@ -28,20 +29,16 @@ const Profile = () => {
 
     const query = new URLSearchParams(useLocation().search);
     const profileId = query.get('id');
-    // console.log(profileId);
-
-    // console.log(localStorage.getItem('access_token'));
 
     useEffect(() => {
-        console.log(localStorage.getItem('access_token'));
         if(localStorage.getItem('access_token') === null){                   
             window.location.href = '/'
         } else {
             (async () => {
                 try {
-                    let profile_url = 'http://127.0.0.1:8000/api/profile/';
+                    let profile_url = `${BASE_URL}/api/profile/`;
                     if (profileId) {
-                        profile_url = `http://127.0.0.1:8000/api/profile/${profileId}/`
+                        profile_url = `${BASE_URL}/api/profile/${profileId}/`
                     }
                     const data = await axios.get(profile_url, {
                         headers: {
@@ -50,14 +47,13 @@ const Profile = () => {
                         }
                     });
                     if (!profileId) {
-                        console.log(data.data)
                         localStorage.setItem('current_profile_id', data.data.profile.id);
                         localStorage.setItem('access_level', data.data.profile.access_level);
                     }
                     setUserdata(data.data.profile);
                     setUserEvents(data.data.events);
 
-                    const usersData = await axios.get('http://127.0.0.1:8000/api/users/', {
+                    const usersData = await axios.get(`${BASE_URL}/api/users/`, {
                         headers: {
                             'Content-Type': 'application/json',
                             'Authorization': `Bearer ${localStorage.getItem('access_token')}`
@@ -85,7 +81,6 @@ const Profile = () => {
             .then(response => response.blob())
             .then(blob => {
                 const file = new File([blob], 'avatar_placeholder.png', { type: "image/png" });
-                console.log(file);
                 userdata.profile_photo = file;
                 Object.keys(userdata).forEach(key => {
                     dataInForm.append(key, userdata[key]);
@@ -94,7 +89,6 @@ const Profile = () => {
             })
         } else if (!avatarInput.value) {
             delete userdata.profile_photo;
-            console.log(userdata);
             Object.keys(userdata).forEach(key => { 
                 dataInForm.append(key, userdata[key]); 
             }); 
@@ -108,16 +102,14 @@ const Profile = () => {
     }
 
     const sendData = (dataInForm) => {
-        axios.put('http://127.0.0.1:8000/api/profile/', dataInForm, {
+        axios.put(`${BASE_URL}/api/profile/`, dataInForm, {
             headers: {
                 'Authorization': `Bearer ${localStorage.getItem('access_token')}`
             }
         })
-        .then(response => { console.log(response); })
+        .then(response => {})
         .catch(error => { console.log(error); });
     }
-
-    console.log(userdata);
 
     return (
         <div className="bg-[#71798C] w-screen h-auto p-6">
@@ -142,7 +134,7 @@ const Profile = () => {
                 <div className="flex flex-row items-start gap-6">
                     {isEditing
                     ? <input id='avatar' type='file' alt='Фото профиля' onChange={(e) => {setUserdata({...userdata, profile_photo: e.target.files[0] })}}/>
-                    : <img src={`http://127.0.0.1:8000${userdata.profile_photo}`} width='185' height='185' alt='Кнопка профиля' className="rounded-[50%]"/>
+                    : <img src={`${BASE_URL}/${userdata.profile_photo}`} width='185' height='185' alt='Кнопка профиля' className="rounded-[50%]"/>
                     }
                     <div className="flex flex-col">
                             {isEditing 
@@ -151,10 +143,6 @@ const Profile = () => {
                                 {userdata.full_name}
                             </h2>}
                         <div className="flex flex-row gap-6 mb-6">
-                            {/* <div>
-                                <h3 className={H3_STYLE}>Статус</h3>
-                                <p className={DATA_STYLE}>{}</p>
-                            </div> */}
                             <div>
                                 <h3 className={H3_STYLE}>Комиссия</h3>
                                 {isEditing && userdata.access_level === 3
@@ -167,7 +155,6 @@ const Profile = () => {
                                 {isEditing 
                                 ? <input type="date" value={`${userdata.date_of_birth}`} onChange={(e) => {setUserdata({...userdata, date_of_birth: e.target.value })}}/>
                                 : <p className={DATA_STYLE}>{checkPlaceholder(userdata.date_of_birth)}</p>}
-                                {/* <p className={DATA_STYLE}>{checkPlaceholder(userdata.date_of_birth)}</p> */}
                             </div>
                         </div>
                         <div className="flex flex-row gap-6">

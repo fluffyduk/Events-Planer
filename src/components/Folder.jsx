@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useLocation } from 'react-router-dom';
 import axios from "axios";
 import Modal from 'react-modal';
-
+import { BASE_URL } from "./Globals";
 
 const buttonStyle = 'bg-[#0077EB] w-[160px] h-[40px] rounded-xl font-gilroy_semibold text-white text-xl p-2';
 const textStyleSemibold = 'font-gilroy_semibold text-white';
@@ -40,7 +40,7 @@ const Folder = () => {
         } else {
             (async () => {
                 try {
-                    const data = await axios.get(`http://127.0.0.1:8000/api/event/${eventId}/`, {
+                    const data = await axios.get(`${BASE_URL}/api/event/${eventId}/`, {
                         headers: {
                             'Content-Type': 'application/json',
                             'Authorization': `Bearer ${localStorage.getItem('access_token')}`
@@ -72,13 +72,12 @@ const Folder = () => {
             title: title, 
             custom_name: custom_name
         };
-        axios.post(`http://127.0.0.1:8000/projects/projects/${projId}/create_google_document/`, data, {
+        axios.post(`${BASE_URL}/projects/projects/${projId}/create_google_document/`, data, {
             headers: {
                 'Authorization': `Bearer ${localStorage.getItem('access_token')}`
             }
         } ,{ withCredentials: true })
         .then(response => {
-            console.log(response);
             const message = document.getElementById('succes_file');
             message.classList.remove('hidden');
             setFilesModalIsOpen(false);
@@ -95,10 +94,6 @@ const Folder = () => {
             }, 3000);
         });
     }
-
-    // console.log(event);
-    // console.log(users);
-    console.log(project);
 
     return (
         <div className='mx-auto p-6 bg-[#71798C] w-screen h-screen'>
@@ -147,6 +142,7 @@ const Folder = () => {
                                     <option value={`doc`}>Документ</option>
                                     <option value={`sheet`}>Таблица</option>
                                     <option value={`slide`}>Презентация</option>
+                                    <option value={`form`}>Форма</option>
                                 </select>
                             </div>
                             <div className="flex gap-6 mb-6">

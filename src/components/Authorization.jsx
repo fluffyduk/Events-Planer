@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
+import {BASE_URL} from "../components/Globals";
 
 const LABEL_STYLE = "font-gilroy_semibold text-[18px] text-[#FFFFFF] opacity-80";
 const INPUT_FIELD_STYLE = "w-[516px] h-[56px] rounded-lg bg-[#F1F4F9] border-[#D8D8D8]";
@@ -16,7 +17,7 @@ const Authorization = () => {
             password: password
         };
 
-        const token = await axios.post('http://127.0.0.1:8000/token/', user, 
+        const token = await axios.post(`${BASE_URL}/token/`, user, 
         {
             headers: {
                 'Content-Type': 'application/json'
@@ -26,7 +27,7 @@ const Authorization = () => {
             localStorage.clear();
             localStorage.setItem('access_token', response.data.access);
             localStorage.setItem('refresh_token', response.data.refresh);
-            console.log(response.data);
+            // console.log(response.data);
             axios.defaults.headers.common['Authorization'] = `Bearer ${response.data['access']}`;
             window.location.href = '/profile'
         })

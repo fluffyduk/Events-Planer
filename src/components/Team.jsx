@@ -2,6 +2,7 @@ import React from "react";
 import axios from "axios";
 import {useEffect, useState} from "react";
 import { Link } from "react-router-dom";
+import { BASE_URL } from "./Globals";
 
 const H3_STYLE = 'font-gilroy_semibold text-white opacity-50 text-[16px] leading-[19px] mb-[6px]';
 const DATA_STYLE = 'font-gilroy_semibold text-white text-[24px] leading-[17px]';
@@ -23,7 +24,7 @@ const Team = () => {
         } else {
             (async () => {
                 try {
-                    const data = await axios.get(`http://127.0.0.1:8000/api/users/`, {
+                    const data = await axios.get(`${BASE_URL}/api/users/`, {
                         headers: {
                             'Content-Type': 'application/json',
                             'Authorization': `Bearer ${localStorage.getItem('access_token')}`
@@ -37,9 +38,6 @@ const Team = () => {
         };
     }, []);
 
-    console.log(users);
-    console.log(localStorage.getItem('access_level'));
-
     return (
         <div className="bg-[#71798C] w-screen h-screen p-6">
             {users.map((user) => {
@@ -49,7 +47,7 @@ const Team = () => {
                         <h1 className="font-gilroy_semibold text-white text-[32px] mr-auto leading-[38px]">Профиль</h1>
                     </div> */}
                     <div className="flex flex-row items-start gap-6">
-                        <img src={`http://127.0.0.1:8000${user.profile_photo}`} width='185' height='185' alt='Кнопка профиля' className="rounded-[50%]"/>
+                        <img src={`${BASE_URL}/${user.profile_photo}`} width='185' height='185' alt='Кнопка профиля' className="rounded-[50%]"/>
                         <div className="flex flex-col">
                             <h2 className="font-gilroy_semibold text-white text-[32px] leading-[38px] mb-6">{user.full_name}</h2>
                             <div className="flex flex-row gap-6 mb-6">

@@ -3,6 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import axios from "axios";
 import { format, parse } from 'date-fns';
 import Modal from 'react-modal';
+import { BASE_URL } from "./Globals";
 
 const buttonStyle = 'bg-[#0077EB] w-[160px] h-[40px] rounded-xl font-gilroy_semibold text-white text-xl p-2';
 const textStyleSemibold = 'font-gilroy_semibold text-white';
@@ -25,7 +26,6 @@ content: {
 };
 
 const formateDate = (date) => {
-    console.log(date);
     if (date !== undefined) {
         date = parse(date, 'yyyy-MM-dd', new Date());
         const curMonth = date.toLocaleString('ru', {month: "long"});
@@ -51,7 +51,7 @@ const Event = () => {
         } else {
             (async () => {
                 try {
-                    const data = await axios.get(`http://127.0.0.1:8000/api/event/${eventData.id}/`, {
+                    const data = await axios.get(`${BASE_URL}/api/event/${eventData.id}/`, {
                         headers: {
                             'Content-Type': 'application/json',
                             'Authorization': `Bearer ${localStorage.getItem('access_token')}`
@@ -59,7 +59,7 @@ const Event = () => {
                     });
                     setEvent(data.data);
 
-                    const usersData = await axios.get('http://127.0.0.1:8000/api/users/', {
+                    const usersData = await axios.get(`${BASE_URL}/api/users/`, {
                         headers: {
                             'Content-Type': 'application/json',
                             'Authorization': `Bearer ${localStorage.getItem('access_token')}`
@@ -67,7 +67,7 @@ const Event = () => {
                     });
                     setUsers(usersData.data);
 
-                    const proj = await axios.get(`http://127.0.0.1:8000/projects/projects/`, {
+                    const proj = await axios.get(`${BASE_URL}/projects/projects/`, {
                         headers: {
                             'Content-Type': 'application/json',
                             'Authorization': `Bearer ${localStorage.getItem('access_token')}`
@@ -92,19 +92,18 @@ const Event = () => {
     }
 
     const updateEvent = (updatedEvent) => {
-        console.log(updatedEvent);
-        axios.put(`http://127.0.0.1:8000/api/event/${eventData.id}/`, updatedEvent, {
+        axios.put(`${BASE_URL}/api/event/${eventData.id}/`, updatedEvent, {
             headers: { 
                 'Content-Type': 'application/json', 
                 'Authorization': `Bearer ${localStorage.getItem('access_token')}` 
             }
         })
-        .then(response => { console.log(response); }) 
+        .then(response => {}) 
         .catch(error => { console.log(error); });
     };
 
     const handleDelete = (evt) => {
-        axios.delete(`http://127.0.0.1:8000/api/event/${eventData.id}/`, {
+        axios.delete(`${BASE_URL}/api/event/${eventData.id}/`, {
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${localStorage.getItem('access_token')}`
@@ -112,7 +111,6 @@ const Event = () => {
         })
         .then(response => {
             window.location.href = '/events'
-            console.log(response);
         })
         .catch(error => {
             console.log(error);
@@ -137,13 +135,12 @@ const Event = () => {
             title: title, 
             custom_name: custom_name
         };
-        axios.post('http://127.0.0.1:8000/projects/projects/10/create_google_document/', data, {
+        axios.post(`${BASE_URL}/projects/projects/10/create_google_document/`, data, {
             headers: {
                 'Authorization': `Bearer ${localStorage.getItem('access_token')}`
             }
         } ,{ withCredentials: true })
         .then(response => {
-            console.log(response);
             const message = document.getElementById('succes_file');
             message.classList.remove('hidden');
             setFilesModalIsOpen(false);
@@ -166,13 +163,12 @@ const Event = () => {
             title: document.getElementById('folderName').value,
             event_id: eventData.id
         };
-        axios.post('http://127.0.0.1:8000/projects/projects/create/', data, {
+        axios.post(`${BASE_URL}/projects/projects/create/`, data, {
             headers: {
                 'Authorization': `Bearer ${localStorage.getItem('access_token')}`
             }
         } ,{ withCredentials: true })
         .then(response => {
-            console.log(response);
             document.getElementById('folderName').value = '';
             const message = document.getElementById('succes_folder');
             message.classList.remove('hidden');
@@ -190,10 +186,6 @@ const Event = () => {
         });
     }
 
-    console.log(event);
-    // console.log(users);
-    console.log(project);
-
     return (
         <div className='mx-auto p-6 bg-[#71798C] w-screen h-screen'>
             <div className="bg-[#292C33] rounded-3xl p-6 h-full overflow-y-auto overflow-x-hidden">
@@ -209,12 +201,12 @@ const Event = () => {
                         (evt) => {
                             evt.preventDefault();
                             if (isEditing) {
-                                axios.put(`http://127.0.0.1:8000/api/event/${eventData.id}/`, event, {
+                                axios.put(`${BASE_URL}/api/event/${eventData.id}/`, event, {
                                     headers: {
                                         'Authorization': `Bearer ${localStorage.getItem('access_token')}`
                                     }
                                 })
-                                .then(response => console.log(response))
+                                .then(response => {})
                                 .catch(error => console.log(error));
                             }
                             setIsEditing(!isEditing);
@@ -242,6 +234,7 @@ const Event = () => {
                                 <option value={`doc`}>Документ</option>
                                 <option value={`sheet`}>Таблица</option>
                                 <option value={`slide`}>Презентация</option>
+                                <option value={`form`}>Форма</option>
                             </select>
                         </div>
                         <div className="flex gap-6 mb-6">

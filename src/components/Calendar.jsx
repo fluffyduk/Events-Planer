@@ -3,6 +3,7 @@ import { eachDayOfInterval, endOfMonth, format, getDay, startOfMonth, isSameDay 
 import axios from "axios";
 import {useEffect, useState} from "react";
 import { Link } from "react-router-dom";
+import { BASE_URL } from "./Globals";
 
 const WEEKDAYS = ["пн", "вт", "ср", "чт", "пт", "сб", "вс"];
 const CALENDAR_HEADER_STYLE = 'font-gilroy_semibold leading-[39px] text-[32px] text-white';
@@ -32,7 +33,7 @@ const Calendar = () => {
         } else {
             (async () => {
                 try {
-                    const data = await axios.get('http://127.0.0.1:8000/api/events/', {
+                    const data = await axios.get(`${BASE_URL}/api/events/`, {
                         headers: {
                             'Content-Type': 'application/json',
                             'Authorization': `Bearer ${localStorage.getItem('access_token')}`
