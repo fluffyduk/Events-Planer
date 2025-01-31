@@ -101,7 +101,6 @@ const Events = () => {
             title: title,
             description: description,
             date: format(new Date(), 'yyyy-MM-dd'),
-            // organizers: [1],
             organizers: [localStorage.getItem('current_profile_id')],
             files: null,
             tasks: '',
@@ -187,8 +186,8 @@ const Events = () => {
                         if (!event.is_past) {
                         return <Link to={`/event?id=${event.id}`}>
                             <div className={`${EVENT_PLACEHOLDER_STYLE} flex flex-col`}>
-                                <h3 className={`${textStyleSemibold} text-[32px] leading-[43px] mb-3 text-white`}>{event.title}</h3>
-                                <p className={`${textStyleRegular} text-[20px] leading-[24px] mb-[51px] text-white`}>{event.description}</p>
+                                <h3 className={`${textStyleSemibold} text-[32px] leading-[43px] mb-3 text-white truncate`}>{event.title}</h3>
+                                <p className={`${textStyleRegular} text-[20px] leading-[24px] mb-[51px] text-white truncate`}>{event.description}</p>
                                 <p className={`${textStyleSemibold} text-[20px] leading-[24px] mb-1 text-white mt-auto`}>Организатор</p>
                                 <div className="flex">
                                     <img src={avatar_placeholder} alt='Аватарка организатора' width='23' height='23' className="rounded-[50%] mr-1"/>

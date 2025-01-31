@@ -71,12 +71,13 @@ const EventsOnDay = () => {
             id: 193,
             title: title,
             description: description,
-            date: date,
-            organizers: [],
+            date: format(new Date(), 'yyyy-MM-dd'),
+            organizers: [localStorage.getItem('current_profile_id')],
             files: null,
             tasks: '',
-            participants: [],
-            projects: []
+            participants: [1],
+            projects: [],
+            is_past: false
         };
 
         axios.post('http://127.0.0.1:8000/api/events/', data, {
@@ -117,7 +118,7 @@ const EventsOnDay = () => {
 
     return (
         <div className='mx-auto p-6 bg-[#71798C] w-screen h-screen'>
-            <div className="bg-[#292C33] rounded-3xl p-6 h-full">
+            <div className="bg-[#292C33] rounded-3xl p-6 h-full overflow-y-scroll">
                 <div className="flex items-center mb-[24px]">
                     <div className="h-[29px] w-[8px] bg-[#008CFF] rounded mr-2"/>
                     <h1 className={`${textStyleSemibold} text-[40px] leading-[48px] mr-auto`}>Календарь</h1>
@@ -187,8 +188,8 @@ const EventsOnDay = () => {
                     {thisDayEvents.map((event) => {
                         return <Link to={`/event?id=${event.id}`}>
                             <div className={`${EVENT_PLACEHOLDER_STYLE}`}>
-                                <h3 className={`${textStyleSemibold} text-[32px] leading-[43px] mb-3 text-white`}>{event.title}</h3>
-                                <p className={`${textStyleRegular} text-[20px] leading-[24px] mb-[51px] text-white`}>{event.description}</p>
+                                <h3 className={`${textStyleSemibold} text-[32px] leading-[43px] mb-3 text-white truncate`}>{event.title}</h3>
+                                <p className={`${textStyleRegular} text-[20px] leading-[24px] mb-[51px] text-white truncate`}>{event.description}</p>
                                 <p className={`${textStyleSemibold} text-[20px] leading-[24px] mb-1 text-white`}>Организатор</p>
                                 <div className="flex">
                                     <img alt='Аватарка организатора' width='23' height='23' className="rounded-[50%] mr-1"/>

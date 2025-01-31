@@ -196,7 +196,7 @@ const Event = () => {
 
     return (
         <div className='mx-auto p-6 bg-[#71798C] w-screen h-screen'>
-            <div className="bg-[#292C33] rounded-3xl p-6 h-full overflow-y-auto">
+            <div className="bg-[#292C33] rounded-3xl p-6 h-full overflow-y-auto overflow-x-hidden">
                 <div className="flex items-center mb-[24px]">
                     <div className="h-[29px] w-[8px] bg-[#008CFF] rounded mr-2"/>
                     <h1 className={`${textStyleSemibold} text-[40px] leading-[48px] mr-auto`}>Мероприятия</h1>
@@ -278,7 +278,7 @@ const Event = () => {
                 </div>
                 : 
                 <div className="flex justify-between">
-                <div>
+                <div className="w-auto break-all">
                     <p className={`${textStyleSemibold} text-[16px] leading-[20px] text-opacity-50`}>Название</p>
                     {isEditing
                     ? <input className="mb-6" type="text" value={`${event.title}`} onChange={(e) => {setEvent({...event, title: e.target.value })}}/>
